@@ -1,6 +1,12 @@
 name: Run Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow for pushes to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger the workflow for PRs targeting the main branch
 
 jobs:
   test:
@@ -13,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'  # Set the Python version you are using
+          python-version: '3.9'  # Set the Python version you are using
 
       - name: Install Dependencies
         run: |
@@ -22,8 +28,22 @@ jobs:
 
       - name: Run UI Tests
         run: |
-          pytest tests/ui_tests/test_ui.py  # Run UI tests using pytest
+          echo "Running UI tests..."
+          pytest tests/ui_tests/test_ui.py  # Run UI tests using pytest (adjust path if necessary)
 
       - name: Run API Tests
         run: |
-          pytest tests/api_tests/test_products.py  # Run API tests using pytest
+          echo "Running API tests..."
+          pytest tests/api_tests/test_products.py  # Run API tests using pytest (adjust path if necessary)
+
+      - name: Run Load Tests (Locust)
+        run: |
+          echo "Running Load tests..."
+          locust -f tests/performance_tests/load_test_locust.py --host=https://the-internet.herokuapp.com  # Run Locust load tests (adjust path if necessary)
+
+      - name: Upload Test Results
+        if: always()  # Always upload test results, even if some tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ./test_results/  # Adjust path if necessary to save test results as artifacts
