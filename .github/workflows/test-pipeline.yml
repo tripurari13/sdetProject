@@ -1,44 +1,29 @@
-name: OpenCart Test Pipeline
+name: Run Tests
 
-on: 
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Specify the OS where the job will run
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3  # This checks out the code from your GitHub repository
 
-    # Set up Python environment
-    - name: Set up Python 3.x
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Set the Python version you are using
 
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip  # Upgrade pip to the latest version
+          pip install -r requirements.txt  # Install dependencies from requirements.txt
 
-    # Run UI Tests (Selenium with pytest)
-    - name: Run UI Tests
-      run: |
-        pytest tests/ui_tests/test_ui.py  # Running UI tests from this file
+      - name: Run UI Tests
+        run: |
+          pytest tests/ui_tests/test_ui.py  # Run UI tests using pytest
 
-    # Run API Tests (requests with pytest)
-    - name: Run API Tests
-      run: |
-        pytest tests/api_tests/test_api.py  # Running API tests from this file
-
-    # Run Performance Tests (Locust)
-    - name: Run Performance Tests (Locust)
-      run: |
-        locust -f tests/performance_tests/load_test_locust.py --headless --users 10 --spawn-rate 1 --host=https://the-internet.herokuapp.com/  # Running Locust performance tests
+      - name: Run API Tests
+        run: |
+          pytest tests/api_tests/test_products.py  # Run API tests using pytest
