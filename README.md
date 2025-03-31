@@ -1,10 +1,5 @@
 # 🚀 OpenCart Test Automation & CI/CD Pipeline Project
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/tripurari13/sdetProject/test-pipeline.yml?branch=main&label=CI%2FCD-Pipeline) 
-![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue)
-![License](https://img.shields.io/github/license/tripurari13/sdetProject)
-![Last Commit](https://img.shields.io/github/last-commit/tripurari13/sdetProject)
-
 📢 **Automated testing framework for OpenCart** with **UI, API, and Performance testing** integrated into a **CI/CD pipeline** using **GitHub Actions**.
 
 ---
@@ -51,7 +46,6 @@
 
 ### 📌 Clone the Repository
 
-```sh
 git clone https://github.com/tripurari13/sdetProject.git
 cd sdetProject
 📌 Install Dependencies
