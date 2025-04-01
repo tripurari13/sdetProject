@@ -25,18 +25,34 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
+
       - name: Install Google Chrome & ChromeDriver (Windows)
         run: |
+          # Install Google Chrome and ChromeDriver using Chocolatey
           choco install googlechrome chromedriver -y
-          echo "Chrome version:"
-          chrome --version
-          echo "ChromeDriver version:"
+          
+          # Check Chrome and ChromeDriver installation
+          $env:Path += ";C:\Program Files (x86)\Google\Chrome\Application"
+          $env:Path += ";C:\tools\chromedriver"
+          
+          # Verify installation of Chrome and ChromeDriver
+          google-chrome --version
           chromedriver --version
 
       - name: Run UI Tests
         run: |
-          pytest tests/ui_tests/ --maxfail=5 --disable-warnings
+          echo "Running UI tests on test_login.py..."
+          pytest tests/ui_tests/test_login.py --maxfail=5 --disable-warnings
+
+      - name: Run API Tests
+        run: |
+          echo "Running API tests on test_products.py..."
+          pytest tests/api_tests/test_products.py --maxfail=5 --disable-warnings
+
+      - name: Run Load Tests (Locust)
+        run: |
+          echo "Running Load tests..."
+          locust -f tests/performance_tests/load_test_locust.py --host=https://the-internet.herokuapp.com
 
       - name: Upload Test Results
         if: always()
