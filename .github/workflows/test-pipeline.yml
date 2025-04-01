@@ -30,13 +30,13 @@ jobs:
         run: |
           # Install Google Chrome and ChromeDriver using Chocolatey
           choco install googlechrome chromedriver -y
-          
-          # Check Chrome and ChromeDriver installation
+
+          # Add Google Chrome and ChromeDriver to PATH (Windows specific)
           $env:Path += ";C:\Program Files (x86)\Google\Chrome\Application"
           $env:Path += ";C:\tools\chromedriver"
-          
-          # Verify installation of Chrome and ChromeDriver
-          google-chrome --version
+
+          # Check if Chrome and ChromeDriver are installed correctly
+          & "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --version
           chromedriver --version
 
       - name: Run UI Tests
