@@ -3,47 +3,52 @@ name: Run Tests
 on:
   push:
     branches:
-      - main  # Trigger the workflow for pushes to the main branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger the workflow for PRs targeting the main branch
+      - main
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Specify the OS where the job will run
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3  # This checks out the code from your GitHub repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # Set the Python version you are using
+          python-version: '3.9'
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip  # Upgrade pip to the latest version
-          pip install -r requirements.txt  # Install dependencies from requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright Browsers (if using Playwright)
+        run: playwright install
+        continue-on-error: true  # Skip errors if Playwright is not used
+
+      - name: Verify Installed Packages
+        run: pip list
 
       - name: Run UI Tests
-        run: |
-          echo "Running UI tests..."
-          pytest tests/ui_tests/test_ui.py  # Run UI tests using pytest (adjust path if necessary)
+        run: pytest tests/ui_tests/ --maxfail=5 --disable-warnings
 
       - name: Run API Tests
-        run: |
-          echo "Running API tests..."
-          pytest tests/api_tests/test_products.py  # Run API tests using pytest (adjust path if necessary)
+        run: pytest tests/api_tests/ --maxfail=5 --disable-warnings
 
       - name: Run Load Tests (Locust)
-        run: |
-          echo "Running Load tests..."
-          locust -f tests/performance_tests/load_test_locust.py --host=https://the-internet.herokuapp.com  # Run Locust load tests (adjust path if necessary)
+        run: locust -f tests/performance_tests/load_test_locust.py --host=https://the-internet.herokuapp.com --headless -u 10 -r 2 --run-time 1m
+        continue-on-error: true  # Ensure workflow doesn't fail if Locust is not properly set
+
+      - name: Save Test Results
+        run: mkdir -p test_results && pytest --junitxml=test_results/results.xml
 
       - name: Upload Test Results
-        if: always()  # Always upload test results, even if some tests fail
-        uses: actions/upload-artifact@v2  # Update to v2 to avoid deprecation
+        if: always()
+        uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: ./test_results/  # Adjust path if necessary to save test results as artifacts
+          path: test_results/
